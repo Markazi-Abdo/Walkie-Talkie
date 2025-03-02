@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { axiosInstance } from '../lib/axios'
+import toast from 'react-hot-toast';
 
 export const walkieTalkieAuthStore = create((set) => ({
     authUser: null,
@@ -21,7 +22,36 @@ export const walkieTalkieAuthStore = create((set) => ({
         }
     },
     signUpUser: async (formData) => {
-        const data = await axiosInstance.post('/auth/signup', formData);
-        
-    } 
+        set({isSigningUp: true});
+        try {
+            const data = await axiosInstance.post('/auth/signup', formData);
+            toast.success("Account created succesfully");
+            set({authUser : data.data});
+        } catch (error) {
+            toast.error(error.message.data.message);
+        } finally {
+            set({isSigningUp: false});
+        }      
+    },
+    logInUser: async (data) => {
+        set({ isLoggingIn: true })
+        try {
+            const action = await axiosInstance.post('/auth/login', data);
+            toast.success("Login Succesfull");
+            set({ authUser: action.data });
+        } catch (error) {
+            toast.error(error.message.data.message)
+        } finally {
+            set({ isLoggingIn : false })
+        }
+    },
+    logoutUser: async () => {
+        try {
+            const action = await axiosInstance.post('/auth/logout');
+            set({ authUser: null});
+            toast.success("Log Out successfull");
+        } catch (error) {
+            toast.error(error.message.data.message);
+        } 
+    }
 }))

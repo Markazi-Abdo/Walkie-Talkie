@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar";
 import { walkieTalkieAuthStore } from "./store/AuthStore";
 import { useEffect } from "react";
 import { Loader } from 'lucide-react'
+import { Toaster } from "react-hot-toast";
 
 
 export default function App() {
@@ -25,7 +26,7 @@ export default function App() {
 
   return (
     <main
-    className='min-h-screen w-screen p-0 m-0 box-border'
+    className='min-h-screen w-screen p-0 m-0 box-border overflow-hidden overflow-y-hidden'
     >
       <NavBar />
       <Routes>
@@ -35,6 +36,10 @@ export default function App() {
         <Route path="/settings" element={<Settings />}></Route>  
         <Route path="/profilePage" element={authUser ? <Profile /> : <Navigate to='/login' />}></Route>  
       </Routes>
+      <Toaster 
+      position="top-left"
+      reverseOrder={true}
+      />
     </main>
   )
 }
