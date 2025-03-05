@@ -25,7 +25,7 @@ export default function NavBar() {
         {
           authUser && (
             <>
-              <Link to="/profile">
+              <Link to="/profilePage">
                 <div 
                 className="rounded-lg p-1 bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <span className="flex justify-center items-center"><User2Icon className="size-6 text-primary" />Profile</span>

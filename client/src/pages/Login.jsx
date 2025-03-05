@@ -114,7 +114,7 @@ export default function SignUp() {
         </div>
       </div>
       {/* Right Side */}
-      <div className='bg-base-300 h-[760px]'>
+      <div className='bg-base-300 h-[750px]'>
         <AuthDesign 
         title={"Join Community"}
         description={"Hello, Im Abdellatif Markazi, an aspiring web developer"}

@@ -3,6 +3,7 @@ import { dbLogger } from "../logs/functions/db.log.js";
 import { serverLogger } from "../logs/functions/server.log.js";
 import Messages from "../model/message.model.js";
 import User from "../model/user.model.js";
+import { getReceiverId, serverNamespace } from "../src/server.js";
 
 export const sideUsers = async (req, res) => {
     try {
@@ -27,7 +28,7 @@ export const getMessages = async (req, res) => {
         const { id: userToChatWith } = req.params;
         const myId = req.user._id || "";
     
-        const messages = Messages.find({
+        const messages = await Messages.find({
             $or:[
                 {senderId: myId, receiverId: userToChatWith},
                 {senderId: userToChatWith, receiverId: myId}
@@ -36,8 +37,8 @@ export const getMessages = async (req, res) => {
         
         !messages && res.status(400).json({ success: false, message: "Couldn't get messages" });
 
-        dbLogger.info("Got Messages");
-        res.status(200).json({ success: true, messagesData: messages});
+        dbLogger.info("Got Messages" + messages || "Nothing");
+        res.status(200).json({ success: true, message: "Got messages Succesfully", messagesData: messages});
         
     } catch (error) {
         dbLogger.info(error.message)
@@ -47,7 +48,7 @@ export const getMessages = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
     try {
-        const { id:userToChatWith } = req.params;
+        const { id:receiverId } = req.params;
         const { text, image } = req.body;
         const mySenderId = req.user._id;
         let imageUrl;
@@ -58,18 +59,21 @@ export const sendMessage = async (req, res) => {
         }
     
         const message = new Messages({
-            mySenderId,
-            userToChatWith,
+            senderId: mySenderId,
+            receiverId: receiverId,
             text,
             image: imageUrl
         })
     
         const savedMessage = await message.save();
         //TODO: Socket functionality goes here....
-
+        const receiver = getReceiverId(receiverId);
+        if(receiver){
+            serverNamespace.to(receiver).emit("newMessage", savedMessage);
+        }
         serverLogger.info(`${savedMessage} in chat`);
         dbLogger.info(`saved Messsage: ${savedMessage}`);
-        res.status(201).json({ success: true, message: savedMessage});
+        res.status(201).json({ success: true, messageData: savedMessage, message: "Inserted Succesfully"});
         
     } catch (error) {
         serverLogger.info(error.message);

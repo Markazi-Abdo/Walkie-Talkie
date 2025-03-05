@@ -9,14 +9,16 @@ import { walkieTalkieAuthStore } from "./store/AuthStore";
 import { useEffect } from "react";
 import { Loader } from 'lucide-react'
 import { Toaster } from "react-hot-toast";
+import { WalkieTalkieThemeStore } from "./store/ThemeStore";
 
 
 export default function App() {
-  const { authUser, checkAuth, isChecking } = walkieTalkieAuthStore();
+  const { authUser, checkAuth, isChecking, onlineUsers } = walkieTalkieAuthStore();
+  const { theme } = WalkieTalkieThemeStore();
   useEffect(()=>{
     checkAuth();
   }, [ checkAuth ])
-  
+  console.log(onlineUsers)
   if(isChecking && !authUser) return(
     <div className="h-screen flex justify-center items-center">
       <Loader className="size-10 animate-spin"></Loader>
@@ -26,6 +28,7 @@ export default function App() {
 
   return (
     <main
+    data-theme = {theme}
     className='min-h-screen w-screen p-0 m-0 box-border overflow-hidden overflow-y-hidden'
     >
       <NavBar />
