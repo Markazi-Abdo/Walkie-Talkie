@@ -11,7 +11,7 @@ import messageRoutes from '../routes/message.routes.js';
 import http from 'http';
 import { Server } from 'socket.io';
 import { dbLogger } from '../logs/functions/db.log.js';
-
+import path from 'path';
 dotenv.config();
 
 const app = express();
@@ -68,6 +68,15 @@ serverNamespace.on('connection', (socket) => {
         dbLogger.info(`Online Users : ${JSON.stringify(connectedUsers)}`);
     })
 })
+
+const __dirname = path.resolve();
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname, "../client/dist")));
+
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "../client", "dist", "index.html"))
+    })
+}
 
 server.listen(PORT, ()=>{
     serverLogger.info(`Server running on port ${PORT}`);

@@ -3,7 +3,7 @@ import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 
-const url = "http://localhost:8000/walkietalkie";
+const url = import.meta.env.MODE === "devlopment" ? "http://localhost:8000/walkietalkie" : "/walkietalkie";
 export const walkieTalkieAuthStore = create((set, get) => ({
     authUser: null,
     isSigningUp: false,
